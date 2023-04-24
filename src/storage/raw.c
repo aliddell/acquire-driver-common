@@ -56,6 +56,23 @@ raw_get(const struct Storage* self_, struct StorageProperties* settings)
     *settings = self->properties;
 }
 
+static void
+raw_get_meta(const struct Storage* self_, struct StoragePropertyMetadata* meta)
+{
+    *meta = (struct StoragePropertyMetadata){
+        .file_control = {
+          .supported = 1,
+          .default_extension = { 0 },
+        },
+        .external_metadata = { 0 },
+        .first_frame_id = { 0 },
+        .pixel_scale = { 0 },
+        .chunking = { 0 },
+        .compression = { 0 },
+    };
+    strncpy(meta->file_control.default_extension, ".raw", sizeof(".raw"));
+}
+
 static enum DeviceState
 raw_start(struct Storage* self_)
 {
@@ -78,7 +95,9 @@ raw_stop(struct Storage* self_)
 }
 
 static enum DeviceState
-raw_append(struct Storage* self_, const struct VideoFrame* frames, size_t* nbytes)
+raw_append(struct Storage* self_,
+           const struct VideoFrame* frames,
+           size_t* nbytes)
 {
     struct Raw* self = containerof(self_, struct Raw, writer);
     CHECK(file_write(&self->file,
@@ -120,6 +139,7 @@ raw_init()
     self->writer = (struct Storage){ .state = DeviceState_AwaitingConfiguration,
                                      .set = raw_set,
                                      .get = raw_get,
+                                     .get_meta = raw_get_meta,
                                      .start = raw_start,
                                      .append = raw_append,
                                      .stop = raw_stop,
@@ -128,3 +148,36 @@ raw_init()
 Error:
     return 0;
 }
+
+#ifndef NO_UNIT_TESTS
+
+#ifdef _WIN32
+#define acquire_export __declspec(dllexport)
+#else
+#define acquire_export
+#endif
+
+acquire_export int
+unit_test__raw_get_meta()
+{
+    int retval = 1;
+    struct Storage* raw = raw_init();
+    CHECK(NULL != raw);
+
+    struct StoragePropertyMetadata meta = { 0 };
+    CHECK(NULL != raw->get_meta);
+    raw_get_meta(raw, &meta);
+
+    CHECK(1 == meta.file_control.supported);
+    CHECK(0 == strcmp(meta.file_control.default_extension, ".raw"));
+
+Finalize:
+    if (NULL != raw)
+        free(raw);
+    raw = NULL;
+    return retval;
+Error:
+    retval = 0;
+    goto Finalize;
+}
+#endif

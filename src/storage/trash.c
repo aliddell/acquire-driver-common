@@ -45,6 +45,22 @@ trash_get(const struct Storage* self_, struct StorageProperties* settings)
     *settings = self->settings;
 }
 
+static void
+trash_get_meta(const struct Storage* self_,
+               struct StoragePropertyMetadata* meta)
+{
+    *meta = (struct StoragePropertyMetadata){
+        .file_control = { 0 },
+        .external_metadata = { 0 },
+        .first_frame_id =
+          (struct Property){
+            .writable = 1, .low = 0.0f, .type = PropertyType_FixedPrecision },
+        .pixel_scale = { 0 },
+        .chunking = { 0 },
+        .compression = { 0 },
+    };
+}
+
 static enum DeviceState
 trash_start(struct Storage* self_)
 {
@@ -98,6 +114,7 @@ trash_init()
     self->writer = (struct Storage){ .state = DeviceState_AwaitingConfiguration,
                                      .set = trash_set,
                                      .get = trash_get,
+                                     .get_meta = trash_get_meta,
                                      .start = trash_start,
                                      .append = trash_append,
                                      .stop = trash_stop,
@@ -106,3 +123,35 @@ trash_init()
 Error:
     return 0;
 }
+
+#ifndef NO_UNIT_TESTS
+
+#ifdef _WIN32
+#define acquire_export __declspec(dllexport)
+#else
+#define acquire_export
+#endif
+
+acquire_export int
+unit_test__trash_get_meta()
+{
+    int retval = 1;
+    struct Storage* trash = trash_init();
+    CHECK(NULL != trash);
+    CHECK(NULL != trash->get_meta);
+
+    struct StoragePropertyMetadata meta = { 0 };
+    trash_get_meta(trash, &meta);
+
+    CHECK(meta.first_frame_id.writable);
+
+Finalize:
+    if (NULL != trash)
+        free(trash);
+    trash = NULL;
+    return retval;
+Error:
+    retval = 0;
+    goto Finalize;
+}
+#endif

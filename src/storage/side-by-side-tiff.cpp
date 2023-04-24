@@ -131,6 +131,22 @@ side_by_side_tiff_get(const struct Storage* self_,
     *props = self->props;
 }
 
+void
+side_by_side_tiff_get_meta(const struct Storage* self_,
+                           struct StoragePropertyMetadata* meta) noexcept
+{
+    struct SideBySideTiff* self =
+      containerof(self_, struct SideBySideTiff, storage);
+    try {
+        CHECK(self->tiff);
+        self->tiff->get_meta(self->tiff, meta);
+    } catch (const std::exception& e) {
+        LOGE("Exception: %s\n", e.what());
+    } catch (...) {
+        LOGE("Exception: (unknown)");
+    }
+}
+
 enum DeviceState
 side_by_side_tiff_start(struct Storage* self_) noexcept
 {
@@ -264,6 +280,7 @@ side_by_side_tiff_init()
     *self = { .storage = {
         .set = side_by_side_tiff_set,
         .get = side_by_side_tiff_get,
+        .get_meta = side_by_side_tiff_get_meta,
         .start = side_by_side_tiff_start,
         .append = side_by_side_tiff_append,
         .stop = side_by_side_tiff_stop,
@@ -273,3 +290,47 @@ side_by_side_tiff_init()
     };
     return &self->storage;
 }
+
+#ifndef NO_UNIT_TESTS
+
+#ifdef _WIN32
+#define acquire_export __declspec(dllexport)
+#else
+#define acquire_export
+#endif
+
+extern "C" acquire_export int
+unit_test__side_by_side_tiff_get_meta()
+{
+    int retval = 1;
+    struct StoragePropertyMetadata meta = { 0 };
+    struct Storage* tiff = side_by_side_tiff_init();
+    try {
+        CHECK(nullptr != tiff);
+        CHECK(nullptr != tiff->get_meta);
+
+        side_by_side_tiff_get_meta(tiff, &meta);
+
+        CHECK(1 == meta.file_control.supported);
+        CHECK(0 == strcmp(meta.file_control.default_extension, ".tif"));
+
+        CHECK(1 == meta.external_metadata.writable);
+
+        CHECK(1 == meta.pixel_scale.x.writable);
+        CHECK(1 == meta.pixel_scale.y.writable);
+
+        CHECK(0 == meta.chunking.supported);
+        CHECK(0 == meta.compression.supported);
+    } catch (const std::exception& e) {
+        LOGE("Exception: %s\n", e.what());
+        retval = 0;
+    } catch (...) {
+        LOGE("Exception: (unknown)");
+        retval = 0;
+    }
+
+    delete tiff;
+    tiff = nullptr;
+    return retval;
+}
+#endif
