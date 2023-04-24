@@ -313,22 +313,22 @@ header()
 }
 
 enum DeviceState
-set(struct Storage*, const struct StorageProperties* properties);
+tiff_set(struct Storage*, const struct StorageProperties* properties);
 
 void
-get(const struct Storage*, struct StorageProperties* settings);
+tiff_get(const struct Storage*, struct StorageProperties* settings);
 
 enum DeviceState
-start(struct Storage*);
+tiff_start(struct Storage*);
 
 enum DeviceState
-append(struct Storage* self_, const struct VideoFrame* frame, size_t* nbytes);
+tiff_append(struct Storage* self_, const struct VideoFrame* frame, size_t* nbytes);
 
 enum DeviceState
-stop(struct Storage*);
+tiff_stop(struct Storage*);
 
 void
-destroy(struct Storage*);
+tiff_destroy(struct Storage*);
 
 size_t
 bytes_of_type(const enum SampleType type)
@@ -386,12 +386,12 @@ StringSection::reserve(size_t nbytes) noexcept
 Tiff::Tiff() noexcept
   : Storage{
     .state = DeviceState_AwaitingConfiguration,
-    .set = ::set,
-    .get = ::get,
-    .start = ::start,
-    .append = ::append,
-    .stop = ::stop,
-    .destroy = ::destroy,}
+    .set = ::tiff_set,
+    .get = ::tiff_get,
+    .start = ::tiff_start,
+    .append = ::tiff_append,
+    .stop = ::tiff_stop,
+    .destroy = ::tiff_destroy,}
   , pixel_scale_um_{.x=1.0,.y=1.0}
   , file_{}
   , last_offset_(0)
@@ -599,7 +599,7 @@ Error:
 }
 
 enum DeviceState
-set(struct Storage* self_, const struct StorageProperties* settings)
+tiff_set(struct Storage* self_, const struct StorageProperties* settings)
 {
     struct Tiff* self = (struct Tiff*)self_;
     if (self->set(settings))
@@ -609,14 +609,14 @@ set(struct Storage* self_, const struct StorageProperties* settings)
 }
 
 void
-get(const struct Storage* self_, struct StorageProperties* settings)
+tiff_get(const struct Storage* self_, struct StorageProperties* settings)
 {
     struct Tiff* self = (struct Tiff*)self_;
     self->get(settings);
 }
 
 enum DeviceState
-start(struct Storage* self_)
+tiff_start(struct Storage* self_)
 {
     struct Tiff* self = (struct Tiff*)self_;
     CHECK(self->start());
@@ -626,7 +626,7 @@ Error:
 }
 
 enum DeviceState
-stop(struct Storage* self_)
+tiff_stop(struct Storage* self_)
 {
     struct Tiff* self = (struct Tiff*)self_;
     CHECK(self->stop());
@@ -636,17 +636,17 @@ Error:
 }
 
 enum DeviceState
-append(struct Storage* self_, const struct VideoFrame* frames, size_t* nbytes)
+tiff_append(struct Storage* self_, const struct VideoFrame* frames, size_t* nbytes)
 {
     struct Tiff* self = (struct Tiff*)self_;
     CHECK(self->append(frames, *nbytes));
     return DeviceState_Running;
 Error:
-    return stop(self_);
+    return tiff_stop(self_);
 }
 
 void
-destroy(struct Storage* self_)
+tiff_destroy(struct Storage* self_)
 {
     struct Tiff* self = (struct Tiff*)self_;
     if (self_ && self_->stop)

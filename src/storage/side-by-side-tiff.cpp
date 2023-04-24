@@ -102,7 +102,8 @@ validate(const struct StorageProperties* props)
 }
 
 enum DeviceState
-set(struct Storage* self_, const struct StorageProperties* props) noexcept
+side_by_side_tiff_set(struct Storage* self_,
+                      const struct StorageProperties* props) noexcept
 {
     try {
         CHECK(self_);
@@ -122,7 +123,8 @@ set(struct Storage* self_, const struct StorageProperties* props) noexcept
 }
 
 void
-get(const struct Storage* self_, struct StorageProperties* props) noexcept
+side_by_side_tiff_get(const struct Storage* self_,
+                      struct StorageProperties* props) noexcept
 {
     struct SideBySideTiff* self =
       containerof(self_, struct SideBySideTiff, storage);
@@ -130,7 +132,7 @@ get(const struct Storage* self_, struct StorageProperties* props) noexcept
 }
 
 enum DeviceState
-start(struct Storage* self_) noexcept
+side_by_side_tiff_start(struct Storage* self_) noexcept
 {
     DeviceState state = DeviceState_AwaitingConfiguration;
     try {
@@ -195,7 +197,7 @@ start(struct Storage* self_) noexcept
 }
 
 enum DeviceState
-stop(struct Storage* self_) noexcept
+side_by_side_tiff_stop(struct Storage* self_) noexcept
 {
     try {
         CHECK(self_);
@@ -214,7 +216,7 @@ stop(struct Storage* self_) noexcept
 }
 
 void
-destroy(struct Storage* self_) noexcept
+side_by_side_tiff_destroy(struct Storage* self_) noexcept
 {
     try {
         CHECK(self_);
@@ -232,9 +234,9 @@ destroy(struct Storage* self_) noexcept
 }
 
 enum DeviceState
-append(struct Storage* self_,
-       const struct VideoFrame* frame,
-       size_t* nbytes) noexcept
+side_by_side_tiff_append(struct Storage* self_,
+                         const struct VideoFrame* frame,
+                         size_t* nbytes) noexcept
 {
     try {
         CHECK(self_);
@@ -245,10 +247,10 @@ append(struct Storage* self_,
               DeviceState_Running);
     } catch (const std::exception& e) {
         LOGE("Exception: %s\n", e.what());
-        return stop(self_);
+        return side_by_side_tiff_stop(self_);
     } catch (...) {
         LOGE("Exception: (unknown)");
-        return stop(self_);
+        return side_by_side_tiff_stop(self_);
     }
     return DeviceState_Running;
 }
@@ -260,12 +262,12 @@ side_by_side_tiff_init()
 {
     struct SideBySideTiff* self = (struct SideBySideTiff*)malloc(sizeof(*self));
     *self = { .storage = {
-        .set = set,
-        .get = get,
-        .start = start,
-        .append = append,
-        .stop = stop,
-        .destroy = destroy,
+        .set = side_by_side_tiff_set,
+        .get = side_by_side_tiff_get,
+        .start = side_by_side_tiff_start,
+        .append = side_by_side_tiff_append,
+        .stop = side_by_side_tiff_stop,
+        .destroy = side_by_side_tiff_destroy,
         },
         .tiff=tiff_init()
     };

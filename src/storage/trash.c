@@ -29,7 +29,7 @@ struct Trash
 };
 
 static enum DeviceState
-set(struct Storage* self_, const struct StorageProperties* settings)
+trash_set(struct Storage* self_, const struct StorageProperties* settings)
 {
     struct Trash* self = containerof(self_, struct Trash, writer);
     CHECK(storage_properties_copy(&self->settings, settings));
@@ -39,14 +39,14 @@ Error:
 }
 
 static void
-get(const struct Storage* self_, struct StorageProperties* settings)
+trash_get(const struct Storage* self_, struct StorageProperties* settings)
 {
     struct Trash* self = containerof(self_, struct Trash, writer);
     *settings = self->settings;
 }
 
 static enum DeviceState
-start(struct Storage* self_)
+trash_start(struct Storage* self_)
 {
     struct Trash* self = containerof(self_, struct Trash, writer);
     self->iframe = self->settings.first_frame_id;
@@ -54,13 +54,15 @@ start(struct Storage* self_)
 }
 
 static enum DeviceState
-stop(struct Storage* self_)
+trash_stop(struct Storage* self_)
 {
     return DeviceState_Armed;
 }
 
 static enum DeviceState
-append(struct Storage* self_, const struct VideoFrame* frames, size_t* nbytes)
+trash_append(struct Storage* self_,
+             const struct VideoFrame* frames,
+             size_t* nbytes)
 {
     struct Trash* self = containerof(self_, struct Trash, writer);
 
@@ -80,7 +82,7 @@ append(struct Storage* self_, const struct VideoFrame* frames, size_t* nbytes)
 }
 
 static void
-destroy(struct Storage* self_)
+trash_destroy(struct Storage* self_)
 {
     struct Trash* self = containerof(self_, struct Trash, writer);
     free(self);
@@ -94,12 +96,12 @@ trash_init()
     memset(self, 0, sizeof(*self));
 
     self->writer = (struct Storage){ .state = DeviceState_AwaitingConfiguration,
-                                     .set = set,
-                                     .get = get,
-                                     .start = start,
-                                     .append = append,
-                                     .stop = stop,
-                                     .destroy = destroy };
+                                     .set = trash_set,
+                                     .get = trash_get,
+                                     .start = trash_start,
+                                     .append = trash_append,
+                                     .stop = trash_stop,
+                                     .destroy = trash_destroy };
     return &self->writer;
 Error:
     return 0;

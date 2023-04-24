@@ -32,7 +32,7 @@ struct Raw
 };
 
 static enum DeviceState
-set(struct Storage* self_, const struct StorageProperties* properties)
+raw_set(struct Storage* self_, const struct StorageProperties* properties)
 {
     struct Raw* self = containerof(self_, struct Raw, writer);
     const char* filename = properties->filename.str;
@@ -50,14 +50,14 @@ Error:
 }
 
 static void
-get(const struct Storage* self_, struct StorageProperties* settings)
+raw_get(const struct Storage* self_, struct StorageProperties* settings)
 {
     struct Raw* self = containerof(self_, struct Raw, writer);
     *settings = self->properties;
 }
 
 static enum DeviceState
-start(struct Storage* self_)
+raw_start(struct Storage* self_)
 {
     struct Raw* self = containerof(self_, struct Raw, writer);
     CHECK(file_create(&self->file,
@@ -70,7 +70,7 @@ Error:
 }
 
 static enum DeviceState
-stop(struct Storage* self_)
+raw_stop(struct Storage* self_)
 {
     struct Raw* self = containerof(self_, struct Raw, writer);
     file_close(&self->file);
@@ -78,7 +78,7 @@ stop(struct Storage* self_)
 }
 
 static enum DeviceState
-append(struct Storage* self_, const struct VideoFrame* frames, size_t* nbytes)
+raw_append(struct Storage* self_, const struct VideoFrame* frames, size_t* nbytes)
 {
     struct Raw* self = containerof(self_, struct Raw, writer);
     CHECK(file_write(&self->file,
@@ -90,14 +90,14 @@ append(struct Storage* self_, const struct VideoFrame* frames, size_t* nbytes)
     return DeviceState_Running;
 Error:
     *nbytes = 0;
-    return stop(self_);
+    return raw_stop(self_);
 }
 
 static void
-destroy(struct Storage* writer_)
+raw_destroy(struct Storage* writer_)
 {
     struct Raw* self = containerof(writer_, struct Raw, writer);
-    stop(writer_);
+    raw_stop(writer_);
     storage_properties_destroy(&self->properties);
     free(self);
 }
@@ -116,15 +116,14 @@ raw_init()
                                   sizeof("out.raw"),
                                   0,
                                   0,
-                                  pixel_scale_um,
-                                  0));
+                                  pixel_scale_um));
     self->writer = (struct Storage){ .state = DeviceState_AwaitingConfiguration,
-                                     .set = set,
-                                     .get = get,
-                                     .start = start,
-                                     .append = append,
-                                     .stop = stop,
-                                     .destroy = destroy };
+                                     .set = raw_set,
+                                     .get = raw_get,
+                                     .start = raw_start,
+                                     .append = raw_append,
+                                     .stop = raw_stop,
+                                     .destroy = raw_destroy };
     return &self->writer;
 Error:
     return 0;
