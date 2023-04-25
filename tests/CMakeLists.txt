@@ -1,8 +1,6 @@
 if(${NOTEST})
     message(STATUS "Skipping test targets")
 else()
-    aq_require(acquire-core-logger)
-    aq_require(acquire-core-platform)
 
     #
     # PARAMETERS
