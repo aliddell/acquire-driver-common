@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <string>
 #include <algorithm>
+#include <limits>
 
 using namespace std;
 
@@ -474,12 +475,12 @@ Tiff::get_meta(struct StoragePropertyMetadata* meta) noexcept
         .first_frame_id = { 0 },
         .pixel_scale = { .x = { .writable = 1,
                                 .low = 0.0f,
-                                .high = std::numeric_limits<float>::infinity(),
-                                .type = PropertyType_FloatingPrecision },
+                                .high = std::numeric_limits<float>::infinity(), // TODO (aliddell: what's best here?)
+                                .type = PropertyType_FloatingPrecision, },
                          .y = { .writable = 1,
                                 .low = 0.0f,
-                                .high = std::numeric_limits<float>::infinity(),
-                                .type = PropertyType_FloatingPrecision } },
+                                .high = std::numeric_limits<float>::infinity(), // TODO (aliddell: what's best here?)
+                                .type = PropertyType_FloatingPrecision, } },
         .chunking = { 0 },
         .compression = { 0 },
     };
