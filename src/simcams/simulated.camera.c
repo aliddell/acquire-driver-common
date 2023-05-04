@@ -14,11 +14,11 @@
 
 #include "pcg_basic.h"
 
-//#ifdef __AVX2__
-//#include "bin2.avx2.c"
-//#else
+#if __AVX2__
+#include "bin2.avx2.c"
+#else
 #include "bin2.plain.c"
-//#endif
+#endif
 
 #define MAX_IMAGE_WIDTH (1ULL << 13)
 #define MAX_IMAGE_HEIGHT (1ULL << 13)
