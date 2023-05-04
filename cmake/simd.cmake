@@ -1,7 +1,6 @@
 include(cmake/TargetArch.cmake)
 
 function(target_enable_simd tgt)
-    message("SIMD is temporarily disabled. See https://github.com/acquire-project/acquire-driver-common/issues/7")
 #    target_architecture(arch)
 #    set(is_gcc_like "$<OR:$<COMPILE_LANG_AND_ID:CXX,AppleClang,Clang,GNU>,$<COMPILE_LANG_AND_ID:C,AppleClang,Clang,GNU>>")
 #    set(is_msvc_like "$<OR:$<COMPILE_LANG_AND_ID:CXX,MSVC>,$<COMPILE_LANG_AND_ID:C,MSVC>>")
