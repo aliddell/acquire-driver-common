@@ -150,10 +150,11 @@ im_fill_pattern(const struct ImageShape* const shape,
                              (size_t)shape->strides.height * y;
             const float dx = x - cx;
             const float dx2 = dx * dx;
-            buf[o] =
-              (uint8_t)(127.0f *
-                        (sinf(6.28f * (t * 10.0f + (dx2 + dy2) * 1e-2f)) +
-                         1.0f));
+//            buf[o] =
+//              (uint8_t)(127.0f *
+//                        (sinf(6.28f * (t * 10.0f + (dx2 + dy2) * 1e-2f)) +
+//                         1.0f));
+            buf[o] = 0;
         }
     }
 }
