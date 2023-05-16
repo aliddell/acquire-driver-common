@@ -3,6 +3,9 @@ name: Create nightly release
 on:
   schedule:
     - cron: "0 5 * * *"  # runs at 5 AM UTC
+  pull_request:
+    branches:
+      - main
 
 jobs:
   nightly-build:
