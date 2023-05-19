@@ -580,7 +580,9 @@ Tiff::append(const struct VideoFrame* frames, size_t nbytes) noexcept
             // update markers
             last_ifd_next_offset_ = section_ifd + offsetof(ifdN_t, next);
             last_offset_ = ifd.next;
-            ++frame_count_;
+            if (++frame_count_ >= 10) {
+                throw std::runtime_error("TIFF: Frame limit reached");
+            }
         }
     } catch (const std::exception& e) {
         LOGE("Exception: %s", e.what());
