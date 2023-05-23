@@ -49,16 +49,12 @@ static void
 trash_get_meta(const struct Storage* self_,
                struct StoragePropertyMetadata* meta)
 {
+    CHECK(meta);
     *meta = (struct StoragePropertyMetadata){
-        .file_control = { 0 },
-        .external_metadata = { 0 },
-        .first_frame_id =
-          (struct Property){
-            .writable = 1, .low = 0.0f, .type = PropertyType_FixedPrecision },
-        .pixel_scale = { 0 },
         .chunking = { 0 },
-        .compression = { 0 },
     };
+Error:
+    return;
 }
 
 static enum DeviceState
@@ -137,13 +133,13 @@ unit_test__trash_get_meta()
 {
     int retval = 1;
     struct Storage* trash = trash_init();
+    struct StoragePropertyMetadata meta = { 0 };
+
     CHECK(NULL != trash);
     CHECK(NULL != trash->get_meta);
-
-    struct StoragePropertyMetadata meta = { 0 };
     trash_get_meta(trash, &meta);
 
-    CHECK(meta.first_frame_id.writable);
+    CHECK(0 == meta.chunking.supported);
 
 Finalize:
     if (NULL != trash)

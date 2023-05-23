@@ -469,22 +469,12 @@ Tiff::get(struct StorageProperties* settings) const noexcept
 void
 Tiff::get_meta(struct StoragePropertyMetadata* meta) noexcept
 {
-    (*meta) = {
-        .file_control = { .supported = 1, .default_extension = { 0 } },
-        .external_metadata = { .writable = 1, .type = PropertyType_String },
-        .first_frame_id = { 0 },
-        .pixel_scale = { .x = { .writable = 1,
-                                .low = 0.0f,
-                                .high = std::numeric_limits<float>::infinity(), // TODO (aliddell: what's best here?)
-                                .type = PropertyType_FloatingPrecision, },
-                         .y = { .writable = 1,
-                                .low = 0.0f,
-                                .high = std::numeric_limits<float>::infinity(), // TODO (aliddell: what's best here?)
-                                .type = PropertyType_FloatingPrecision, } },
+    CHECK(meta);
+    *meta = StoragePropertyMetadata{
         .chunking = { 0 },
-        .compression = { 0 },
     };
-    strncpy(meta->file_control.default_extension, ".tif", sizeof(".tif"));
+Error:
+    return;
 }
 
 int
@@ -715,23 +705,14 @@ extern "C" acquire_export int
 unit_test__tiff_get_meta()
 {
     int retval = 1;
-    struct StoragePropertyMetadata meta = { 0 };
     struct Storage* tiff = tiff_init();
+    struct StoragePropertyMetadata meta = { 0 };
+
     CHECK(nullptr != tiff);
     CHECK(nullptr != tiff->get_meta);
-
     tiff_get_meta(tiff, &meta);
 
-    CHECK(1 == meta.file_control.supported);
-    CHECK(0 == strcmp(meta.file_control.default_extension, ".tif"));
-
-    CHECK(1 == meta.external_metadata.writable);
-
-    CHECK(1 == meta.pixel_scale.x.writable);
-    CHECK(1 == meta.pixel_scale.y.writable);
-
     CHECK(0 == meta.chunking.supported);
-    CHECK(0 == meta.compression.supported);
 
 Finalize:
     delete tiff;

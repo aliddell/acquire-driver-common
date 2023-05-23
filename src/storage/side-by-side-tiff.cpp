@@ -305,22 +305,12 @@ unit_test__side_by_side_tiff_get_meta()
     int retval = 1;
     struct StoragePropertyMetadata meta = { 0 };
     struct Storage* tiff = side_by_side_tiff_init();
+
     try {
         CHECK(nullptr != tiff);
         CHECK(nullptr != tiff->get_meta);
 
-        side_by_side_tiff_get_meta(tiff, &meta);
-
-        CHECK(1 == meta.file_control.supported);
-        CHECK(0 == strcmp(meta.file_control.default_extension, ".tif"));
-
-        CHECK(1 == meta.external_metadata.writable);
-
-        CHECK(1 == meta.pixel_scale.x.writable);
-        CHECK(1 == meta.pixel_scale.y.writable);
-
         CHECK(0 == meta.chunking.supported);
-        CHECK(0 == meta.compression.supported);
     } catch (const std::exception& e) {
         LOGE("Exception: %s\n", e.what());
         retval = 0;

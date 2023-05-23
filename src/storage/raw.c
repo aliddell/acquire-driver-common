@@ -59,18 +59,12 @@ raw_get(const struct Storage* self_, struct StorageProperties* settings)
 static void
 raw_get_meta(const struct Storage* self_, struct StoragePropertyMetadata* meta)
 {
+    CHECK(meta);
     *meta = (struct StoragePropertyMetadata){
-        .file_control = {
-          .supported = 1,
-          .default_extension = { 0 },
-        },
-        .external_metadata = { 0 },
-        .first_frame_id = { 0 },
-        .pixel_scale = { 0 },
         .chunking = { 0 },
-        .compression = { 0 },
     };
-    strncpy(meta->file_control.default_extension, ".raw", sizeof(".raw"));
+Error:
+    return;
 }
 
 static enum DeviceState
@@ -162,14 +156,13 @@ unit_test__raw_get_meta()
 {
     int retval = 1;
     struct Storage* raw = raw_init();
-    CHECK(NULL != raw);
-
     struct StoragePropertyMetadata meta = { 0 };
+
+    CHECK(NULL != raw);
     CHECK(NULL != raw->get_meta);
     raw_get_meta(raw, &meta);
 
-    CHECK(1 == meta.file_control.supported);
-    CHECK(0 == strcmp(meta.file_control.default_extension, ".raw"));
+    CHECK(0 == meta.chunking.supported);
 
 Finalize:
     if (NULL != raw)
