@@ -249,6 +249,12 @@ side_by_side_tiff_destroy(struct Storage* self_) noexcept
     }
 }
 
+void
+side_by_side_tiff_reserve_image_shape(struct Storage* self_,
+                                     const struct ImageShape* shape) noexcept
+{
+}
+
 enum DeviceState
 side_by_side_tiff_append(struct Storage* self_,
                          const struct VideoFrame* frame,
@@ -285,6 +291,7 @@ side_by_side_tiff_init()
         .append = side_by_side_tiff_append,
         .stop = side_by_side_tiff_stop,
         .destroy = side_by_side_tiff_destroy,
+        .reserve_image_shape = side_by_side_tiff_reserve_image_shape,
         },
         .tiff=tiff_init()
     };

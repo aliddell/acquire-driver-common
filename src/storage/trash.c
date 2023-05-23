@@ -100,6 +100,11 @@ trash_destroy(struct Storage* self_)
     free(self);
 }
 
+static void
+trash_reserve_image_shape(struct Storage* self_, const struct ImageShape* shape)
+{
+}
+
 struct Storage*
 trash_init()
 {
@@ -107,14 +112,16 @@ trash_init()
     CHECK(self = malloc(sizeof(*self)));
     memset(self, 0, sizeof(*self));
 
-    self->writer = (struct Storage){ .state = DeviceState_AwaitingConfiguration,
-                                     .set = trash_set,
-                                     .get = trash_get,
-                                     .get_meta = trash_get_meta,
-                                     .start = trash_start,
-                                     .append = trash_append,
-                                     .stop = trash_stop,
-                                     .destroy = trash_destroy };
+    self->writer =
+      (struct Storage){ .state = DeviceState_AwaitingConfiguration,
+                        .set = trash_set,
+                        .get = trash_get,
+                        .get_meta = trash_get_meta,
+                        .start = trash_start,
+                        .append = trash_append,
+                        .stop = trash_stop,
+                        .destroy = trash_destroy,
+                        .reserve_image_shape = trash_reserve_image_shape };
     return &self->writer;
 Error:
     return 0;

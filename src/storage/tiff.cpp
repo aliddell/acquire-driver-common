@@ -337,6 +337,9 @@ tiff_stop(struct Storage*);
 void
 tiff_destroy(struct Storage*);
 
+void
+tiff_reserve_image_shape(struct Storage*, const struct ImageShape* shape);
+
 size_t
 bytes_of_type(const enum SampleType type)
 {
@@ -399,7 +402,9 @@ Tiff::Tiff() noexcept
     .start = ::tiff_start,
     .append = ::tiff_append,
     .stop = ::tiff_stop,
-    .destroy = ::tiff_destroy,}
+    .destroy = ::tiff_destroy,
+    .reserve_image_shape = ::tiff_reserve_image_shape,
+  }
   , pixel_scale_um_{.x=1.0,.y=1.0}
   , file_{}
   , last_offset_(0)
@@ -683,6 +688,11 @@ tiff_destroy(struct Storage* self_)
     if (self_ && self_->stop)
         self_->stop(self_);
     delete self;
+}
+
+void
+tiff_reserve_image_shape(struct Storage* self_, const struct ImageShape* shape)
+{
 }
 
 } // end namespace ::{anonymous}

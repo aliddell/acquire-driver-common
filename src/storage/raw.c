@@ -115,6 +115,11 @@ raw_destroy(struct Storage* writer_)
     free(self);
 }
 
+static void
+raw_reserve_image_shape(struct Storage* self_, const struct ImageShape* shape)
+{
+}
+
 struct Storage*
 raw_init()
 {
@@ -130,14 +135,16 @@ raw_init()
                                   0,
                                   0,
                                   pixel_scale_um));
-    self->writer = (struct Storage){ .state = DeviceState_AwaitingConfiguration,
-                                     .set = raw_set,
-                                     .get = raw_get,
-                                     .get_meta = raw_get_meta,
-                                     .start = raw_start,
-                                     .append = raw_append,
-                                     .stop = raw_stop,
-                                     .destroy = raw_destroy };
+    self->writer =
+      (struct Storage){ .state = DeviceState_AwaitingConfiguration,
+                        .set = raw_set,
+                        .get = raw_get,
+                        .get_meta = raw_get_meta,
+                        .start = raw_start,
+                        .append = raw_append,
+                        .stop = raw_stop,
+                        .destroy = raw_destroy,
+                        .reserve_image_shape = raw_reserve_image_shape };
     return &self->writer;
 Error:
     return 0;
