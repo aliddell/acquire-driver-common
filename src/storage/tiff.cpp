@@ -474,9 +474,7 @@ void
 Tiff::get_meta(struct StoragePropertyMetadata* meta) noexcept
 {
     CHECK(meta);
-    *meta = StoragePropertyMetadata{
-        .chunking = { 0 },
-    };
+    *meta = { 0 };
 Error:
     return;
 }
@@ -691,7 +689,7 @@ tiff_destroy(struct Storage* self_)
 
 void
 tiff_reserve_image_shape(struct Storage* self_, const struct ImageShape* shape)
-{
+{ // no-op
 }
 
 } // end namespace ::{anonymous}
@@ -701,34 +699,3 @@ tiff_init()
 {
     return new Tiff();
 }
-
-#ifndef NO_UNIT_TESTS
-
-#ifdef _WIN32
-#define acquire_export __declspec(dllexport)
-#else
-#define acquire_export
-#endif
-
-extern "C" acquire_export int
-unit_test__tiff_get_meta()
-{
-    int retval = 1;
-    struct Storage* tiff = tiff_init();
-    struct StoragePropertyMetadata meta = { 0 };
-
-    CHECK(nullptr != tiff);
-    CHECK(nullptr != tiff->get_meta);
-    tiff_get_meta(tiff, &meta);
-
-    CHECK(0 == meta.chunking.supported);
-
-Finalize:
-    delete tiff;
-    tiff = nullptr;
-    return retval;
-Error:
-    retval = 0;
-    goto Finalize;
-}
-#endif

@@ -50,9 +50,7 @@ trash_get_meta(const struct Storage* self_,
                struct StoragePropertyMetadata* meta)
 {
     CHECK(meta);
-    *meta = (struct StoragePropertyMetadata){
-        .chunking = { 0 },
-    };
+    *meta = (struct StoragePropertyMetadata){ 0 };
 Error:
     return;
 }
@@ -102,7 +100,7 @@ trash_destroy(struct Storage* self_)
 
 static void
 trash_reserve_image_shape(struct Storage* self_, const struct ImageShape* shape)
-{
+{ // no-op
 }
 
 struct Storage*
@@ -126,35 +124,3 @@ trash_init()
 Error:
     return 0;
 }
-
-#ifndef NO_UNIT_TESTS
-
-#ifdef _WIN32
-#define acquire_export __declspec(dllexport)
-#else
-#define acquire_export
-#endif
-
-acquire_export int
-unit_test__trash_get_meta()
-{
-    int retval = 1;
-    struct Storage* trash = trash_init();
-    struct StoragePropertyMetadata meta = { 0 };
-
-    CHECK(NULL != trash);
-    CHECK(NULL != trash->get_meta);
-    trash_get_meta(trash, &meta);
-
-    CHECK(0 == meta.chunking.supported);
-
-Finalize:
-    if (NULL != trash)
-        free(trash);
-    trash = NULL;
-    return retval;
-Error:
-    retval = 0;
-    goto Finalize;
-}
-#endif

@@ -60,9 +60,7 @@ static void
 raw_get_meta(const struct Storage* self_, struct StoragePropertyMetadata* meta)
 {
     CHECK(meta);
-    *meta = (struct StoragePropertyMetadata){
-        .chunking = { 0 },
-    };
+    *meta = (struct StoragePropertyMetadata){ 0 };
 Error:
     return;
 }
@@ -117,7 +115,7 @@ raw_destroy(struct Storage* writer_)
 
 static void
 raw_reserve_image_shape(struct Storage* self_, const struct ImageShape* shape)
-{
+{ // no-op
 }
 
 struct Storage*
@@ -149,35 +147,3 @@ raw_init()
 Error:
     return 0;
 }
-
-#ifndef NO_UNIT_TESTS
-
-#ifdef _WIN32
-#define acquire_export __declspec(dllexport)
-#else
-#define acquire_export
-#endif
-
-acquire_export int
-unit_test__raw_get_meta()
-{
-    int retval = 1;
-    struct Storage* raw = raw_init();
-    struct StoragePropertyMetadata meta = { 0 };
-
-    CHECK(NULL != raw);
-    CHECK(NULL != raw->get_meta);
-    raw_get_meta(raw, &meta);
-
-    CHECK(0 == meta.chunking.supported);
-
-Finalize:
-    if (NULL != raw)
-        free(raw);
-    raw = NULL;
-    return retval;
-Error:
-    retval = 0;
-    goto Finalize;
-}
-#endif

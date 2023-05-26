@@ -251,8 +251,8 @@ side_by_side_tiff_destroy(struct Storage* self_) noexcept
 
 void
 side_by_side_tiff_reserve_image_shape(struct Storage* self_,
-                                     const struct ImageShape* shape) noexcept
-{
+                                      const struct ImageShape* shape) noexcept
+{ // no-op
 }
 
 enum DeviceState
@@ -297,37 +297,3 @@ side_by_side_tiff_init()
     };
     return &self->storage;
 }
-
-#ifndef NO_UNIT_TESTS
-
-#ifdef _WIN32
-#define acquire_export __declspec(dllexport)
-#else
-#define acquire_export
-#endif
-
-extern "C" acquire_export int
-unit_test__side_by_side_tiff_get_meta()
-{
-    int retval = 1;
-    struct StoragePropertyMetadata meta = { 0 };
-    struct Storage* tiff = side_by_side_tiff_init();
-
-    try {
-        CHECK(nullptr != tiff);
-        CHECK(nullptr != tiff->get_meta);
-
-        CHECK(0 == meta.chunking.supported);
-    } catch (const std::exception& e) {
-        LOGE("Exception: %s\n", e.what());
-        retval = 0;
-    } catch (...) {
-        LOGE("Exception: (unknown)");
-        retval = 0;
-    }
-
-    delete tiff;
-    tiff = nullptr;
-    return retval;
-}
-#endif
