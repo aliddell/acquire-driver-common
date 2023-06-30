@@ -36,7 +36,7 @@ jobs:
 
       - name: Test  # don't release if tests are failing
         working-directory: ${{github.workspace}}/build
-        run: ctest -C ${{env.BUILD_TYPE}} -L anyplatform --output-on-failure
+        run: ctest -C Release -L anyplatform --output-on-failure
 
       - uses: actions/upload-artifact@v3
         with:
