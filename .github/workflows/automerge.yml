@@ -16,11 +16,11 @@ jobs:
     if: ${{ github.actor == 'aliddell' && github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      - name: "Get Dependabot metadata"
-        id: dependabot-metadata
-        uses: dependabot/fetch-metadata@v1.1.1
-        with:
-          github-token: ${{ github.token }}
+#      - name: "Get Dependabot metadata"
+#        id: dependabot-metadata
+#        uses: dependabot/fetch-metadata@v1.1.1
+#        with:
+#          github-token: ${{ github.token }}
 
       - name: "Approve the PR"
         run: gh pr review --approve "$PR_URL"
