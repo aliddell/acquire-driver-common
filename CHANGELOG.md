@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Git tags are no longer leaky.
 - Driver builds as an OSX universal binary.
+- Tests of tests are no longer built.
 
 ## [0.1.5](https://github.com/acquire-project/acquire-driver-common/compare/v0.1.4...v0.1.5) # 2023-08-14
 
