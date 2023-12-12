@@ -3,13 +3,15 @@ name: Build
 on:
   push:
     branches: [ "main" ]
+  pull_request: # TODO (aliddell): remove this
+    branches: [ "main" ]
 
 jobs:
   build:
     strategy:
       matrix:
         build_type: [ Debug, Release ]
-        platform: [ "windows-latest", "ubuntu-latest", "macos-latest" ]
+        platform: [ "windows-latest", "ubuntu-latest", "macos-latest-xlarge" ]
 
     runs-on: ${{ matrix.platform }}
 
