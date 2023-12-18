@@ -1,3 +1,0 @@
-[submodule "tests/integration/acquire-video-runtime"]
-	path = tests/integration/acquire-video-runtime
-	url = ../acquire-video-runtime.git
